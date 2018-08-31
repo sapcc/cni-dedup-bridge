@@ -64,7 +64,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 		return fmt.Errorf("Failed to get CIDR from interface %s: %s", cfg.Device, err)
 	}
 
-	syncEbtablesDedupRules(cfg.Name, link.Attrs().HardwareAddr, cidr)
+	syncEbtablesDedupRules(cfg.Device, link.Attrs().HardwareAddr, cidr)
 
 	return types.PrintResult(&current.Result{}, cfg.CNIVersion)
 
@@ -75,9 +75,9 @@ func cmdDel(args *skel.CmdArgs) error {
 	return nil
 }
 
-func syncEbtablesDedupRules(name string, macAddr net.HardwareAddr, cidr *net.IPNet) {
+func syncEbtablesDedupRules(device string, macAddr net.HardwareAddr, cidr *net.IPNet) {
 
-	dedupChain := utilebtables.Chain(strings.ToUpper(name) + "-DEDUP")
+	dedupChain := utilebtables.Chain(strings.ToUpper(device) + "-DEDUP")
 
 	ebtables := utilebtables.New(utilexec.New())
 	if err := ebtables.FlushChain(utilebtables.TableFilter, dedupChain); err != nil {
